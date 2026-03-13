@@ -1,5 +1,6 @@
-const { isEmail, isStrongPassword } = require("validator");
+const { isStrongPassword } = require("validator");
 const { user: UserModel } = require("../models");
+const { isValidEmail } = require("../utils/validator");
 
 /**
  * @param {import("express").Request} req
@@ -7,17 +8,19 @@ const { user: UserModel } = require("../models");
  * @param {import("express").NextFunction} next
  */
 const validateRegister = async (req, res, next) => {
+  console.log("1m");
   const { name, email, password } = req.body;
+  console.log("2m");
 
   if (!name || !email || !password) {
-    return res.send({
-      message: "Bad request",
+    return res.status(400).send({
+      message: "Name, email, and password are required",
       data: null,
     });
   }
 
-  if (!isEmail(email)) {
-    return res.send({
+  if (!isValidEmail(email)) {
+    return res.status(400).send({
       message: "Invalid email",
       data: null,
     });
@@ -29,10 +32,9 @@ const validateRegister = async (req, res, next) => {
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
-      minSymbols: 1,
     })
   ) {
-    return res.send({
+    return res.status(400).send({
       message: "Password is too weak",
       data: null,
     });
@@ -60,14 +62,14 @@ const validateLogin = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.send({
-      message: "Bad request",
+    return res.status(400).send({
+      message: "Email and password are required",
       data: null,
     });
   }
 
-  if (!isEmail(email)) {
-    return res.send({
+  if (!isValidEmail(email)) {
+    return res.status(400).send({
       message: "Invalid email",
       data: null,
     });
